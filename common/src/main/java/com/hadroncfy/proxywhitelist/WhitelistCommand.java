@@ -11,7 +11,6 @@ public class WhitelistCommand {
 
     WhitelistCommand(Whitelist w){
         whitelist = w;
-        w.getContext().loadConfig(config);
     }
 
     public List<String> doCompletion(String[] args) {
@@ -41,6 +40,8 @@ public class WhitelistCommand {
 
     public void exec(ICommandSender sender, String[] args){
         IPlugin ctx = whitelist.getContext();
+        ctx.loadConfig(config);
+
         if (args.length == 1) {
             if (args[0].equals("on")) {
                 whitelist.setEnabled(true);
@@ -94,6 +95,7 @@ public class WhitelistCommand {
             }
             else if (args[0].equals("remove")){
                 if (whitelist.removeByName(args[1])){
+                    sender.sendResultMessage("Done");
                     if (config.broadcast) ctx.broadcast(sender, "Removed " + args[1] + " from white list.");
                 }
                 else {
