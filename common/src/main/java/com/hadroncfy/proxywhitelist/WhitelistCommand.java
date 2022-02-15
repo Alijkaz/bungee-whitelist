@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 
 public class WhitelistCommand {
     private Whitelist whitelist;
+    private Config config = new Config();
 
     WhitelistCommand(Whitelist w){
         whitelist = w;
+        w.getContext().loadConfig(config);
     }
 
     public List<String> doCompletion(String[] args) {
@@ -42,15 +44,18 @@ public class WhitelistCommand {
         if (args.length == 1) {
             if (args[0].equals("on")) {
                 whitelist.setEnabled(true);
-                ctx.broadcast(sender, "White list is now enabled");
+                sender.sendResultMessage("Done");
+                if (config.broadcast) ctx.broadcast(sender, "White list is now enabled");
                 return;
             } else if (args[0].equals("off")) {
                 whitelist.setEnabled(false);
-                ctx.broadcast(sender, "White list is now disabled");
+                sender.sendResultMessage("Done");
+                if (config.broadcast) ctx.broadcast(sender, "White list is now disabled");
                 return;
             } else if (args[0].equals("reload")) {
                 whitelist.loadWhitelist();
-                ctx.broadcast(sender, "Reloaded white list");
+                sender.sendResultMessage("Done");
+                if (config.broadcast) ctx.broadcast(sender, "Reloaded white list");
                 return;
             } else if (args[0].equals("list")) {
                 List<Profile> players = whitelist.getPlayers();
@@ -75,7 +80,7 @@ public class WhitelistCommand {
                         if (p != null){
                             whitelist.update(p.uuid, p.name);
                             sender.sendResultMessage("Done");
-                            ctx.broadcast(sender, "Added " + p.name + "(" + p.uuid.toString() + ") to white list.");
+                            if (config.broadcast) ctx.broadcast(sender, "Added " + p.name + "(" + p.uuid.toString() + ") to white list.");
                         }
                         else {
                             sender.sendResultMessage("Player " + args[1] + " not found.");
@@ -89,7 +94,7 @@ public class WhitelistCommand {
             }
             else if (args[0].equals("remove")){
                 if (whitelist.removeByName(args[1])){
-                    ctx.broadcast(sender, "Removed " + args[1] + " from white list.");
+                    if (config.broadcast) ctx.broadcast(sender, "Removed " + args[1] + " from white list.");
                 }
                 else {
                     sender.sendResultMessage("Player not in the white list.");
